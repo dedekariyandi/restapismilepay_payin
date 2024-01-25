@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
@@ -21,9 +22,9 @@ class SmilePayPayin extends Controller
         $endPointUlr = '/v1.0/transaction/pay-in';
         $url = 'https://sandbox-gateway.smilepay.id' . $endPointUlr; //endpoint ubah ke production jika website kamu siap untuk public https://gateway.smilepay.id
 
-        $timestamp = now()->format('Y-m-d\TH:i:sP');
-        $partnerId =  'sandbox-10039'; // masukkan merchant id smilepay kalian
-        $merchantScreet = '473fd2ab39903377687d06cb85ab4c003625b0b6b7ebe449afcb2649dc0f804f' ; // masukkan merchant screet smilepay kalian
+        $timestamp = Carbon::now()->toIso8601String();
+        $partnerId =  'sandbox-123456'; // masukkan merchant id smilepay kalian
+        $merchantScreet = '473fd2ab39903377687d06cb85ab4c003625b0b6b7ebe449afcb264123456789' ; // masukkan merchant screet smilepay kalian
         // generate parameters
         $merchantOrderNo = "T_" . time();
         $purpose = "Purpose For Transaction from PHP SDK";
@@ -40,7 +41,7 @@ class SmilePayPayin extends Controller
             'merchantId' => $partnerId,
             // jika sudah production silahkan atur merchantName dan accountNo
             'merchantName' => "Nama Va nanti", //untuk nama pembayaran di virtual account
-            'accountNo' => '1023120816425057420', //didapatkan dari akun production smilepay yaitu nomor akun/kartu
+            'accountNo' => '12345678901122334455', //didapatkan dari akun production smilepay yaitu nomor akun/kartu
         ];
 
         // payerReq
@@ -109,7 +110,6 @@ class SmilePayPayin extends Controller
         $signature = base64_encode($sha512);
         $client = new Client();
         $response = $client->post($url, [
-            'json' => $jsonString,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
@@ -120,11 +120,43 @@ class SmilePayPayin extends Controller
                 'X-EXTERNAL-ID' => '123729342472347234236', //bisa pakai rand(10,1000) tergantung selera hehe
                 'CHANNEL-ID' => '95221', //bisa pakai rand(10,1000) tergantung selera hehe
             ],
-           
+            'json' => json_decode($jsonString, true),
            
         ]);
-        Log::info($response);
-        return $response;
+        $responseData = json_decode($response->getBody(), true);
+        Log::info( $responseData);
+        return  $responseData;
+        
+        // Jika error seperti ini  Blacklisted. Ip silahkan masukkan IP anda ke setting api di smilepay 
+
+        //    /GuzzleHttp\Exception\ClientException: Client error: `POST https://sandbox-gateway.smilepay.id/v1.0/transaction/pay-in` resulted in a `403 Forbidden` response:
+        //    {&quot;responseCode&quot;:&quot;4039019&quot;,&quot;responseMessage&quot;:&quot;Merchant Blacklisted. Ip not allow. MerchantID: sandbox-123456. Current ip:  (truncated...)
+        //     in file 
+
+        // jika benar maka hasil nya akan seprti ini
+
+        // "tradeNo": "T101sandbox-10039240126042833650",
+        // "orderNo": "T_1706218110",
+        // "status": "PROCESSING",
+        // "merchant": {
+        //     "merchantId": "sandbox-10039",
+        //     "merchantName": "Nama Va nanti",
+        //     "accountNo": "656756757657657657"
+        // },
+        // "transactionTime": "2024-01-26T04:28:33+07:00",
+        // "money": {
+        //     "currency": "IDR",
+        //     "amount": 10000
+        // },
+        // "channel": {
+        //     "paymentMethod": "BCA",
+        //     "vaNumber": "316313380858920",
+        //     "qrString": "To be completed",
+        //     "paymentUrl": "https://sandbox-gateway.smilepay.id/cashier/#/loading?tradeNo=T101sandbox-10039240126042833650",
+        //     "additionalInfo": null
+        // },
+        // "responseCode": "2009000",
+        // "responseMessage": "Successful"
     }
 
     public function createAccessToken()
