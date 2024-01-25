@@ -1,4 +1,4 @@
-##                            membuat payment gateway smilepay dengan laravel 10 (Payin)
+<h1> membuat payment gateway smilepay dengan laravel 10 (Payin) </h1>
 
 ##  Jika error seperti ini  Blacklisted. Ip silahkan masukkan IP anda ke setting api di smilepay 
 
@@ -13,7 +13,7 @@
     "orderNo": "T_1706218110",
     "status": "PROCESSING",
     "merchant": {
-        "merchantId": "sandbox-10039",
+        "merchantId": "sandbox-123456",
         "merchantName": "Nama Va nanti",
         "accountNo": "656756757657657657"
     },
