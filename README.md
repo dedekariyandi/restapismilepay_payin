@@ -6,7 +6,7 @@
        {&quot;responseCode&quot;:&quot;4039019&quot;,&quot;responseMessage&quot;:&quot;Merchant Blacklisted. Ip not allow. MerchantID: sandbox-123456. Current ip:  (truncated...)
       in file 
 
-## jika benar maka hasil nya akan seprti ini
+## jika benar maka hasil nya akan seperti ini
 ```
 {
     "tradeNo": "T101sandbox-10039240126042833650",
